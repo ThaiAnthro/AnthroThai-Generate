@@ -60,7 +60,7 @@ file_put_contents(__DIR__ . "/AnthroThai/contact.html", $string);
 
 echo "\n";
 
-$telegram_room = array();
+$telegram_room = [];
 require_once("telegram_group.php");
 
 echo "Building community.html ... ";
@@ -72,7 +72,7 @@ $string = str_replace("##TITLE##", "ชุมชน", $string);
 //build link
 $telegram_link = "";
 foreach ($telegram_room as $tr) {
-    $telegram_link = $telegram_link . "<li><a href='#' data-toggle='modal' data-target='#{$tr[2]}Modal'>{$tr[1]}</a> {$tr[3]}</li>";
+    $telegram_link .= "<li><button type='button' class='btn btn-link p-0 m-0 d-inline align-baseline' data-toggle='modal' data-target='#{$tr[2]}Modal'>{$tr[1]}</button> {$tr[3]}</li>";
 }
 $string = str_replace("##TELEGRAM_ROOM##", $telegram_link, $string);
 
@@ -94,22 +94,22 @@ foreach ($telegram_room as $tr) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, ($params));
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $result = curl_exec($ch);
     curl_close($ch);
 
     $json = json_decode($result, true);
     if (!isset($json['ok']) || !$json['ok']) {
         die($result . "<< ERROR!");
-    } else {
-        $telegram_url = $json['result'];
     }
+
+    $telegram_url = $json['result'];
 
     $ux = "";
     $oo = explode("https://t.me/joinchat/", $telegram_url);
     $ux = base64_encode($oo[1]);
 
-
+    // The Join button uses Javascript to mitigate link scrapers
     $modal = $modal . '<div class="modal fade" id="' . $tr[2] . 'Modal" tabindex="-1" aria-labelledby="' . $tr[2] . 'ModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -124,7 +124,7 @@ foreach ($telegram_room as $tr) {
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="join_telegram(\'' . $ux . '\');">Join ...</button>
+            <button type="button" class="btn btn-primary" onclick="join_telegram(\'' . $ux . '\');">Join …</button>
             </div>
         </div>
         </div>
